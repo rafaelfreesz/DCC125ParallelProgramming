@@ -44,9 +44,9 @@ int main(void){
     if(my_rank==0){
         vectorb=malloc(SIZE*sizeof(int));
 
-        MPI_Gather(localVector,local_n,MPI_INT,vectorb,local_n,MPI_INT,0,comm);
+        MPI_Gather(localVector,local_n,MPI_INT,vectorb,local_n,MPI_INT,comm);
     }else{
-        MPI_Gather(localVector,local_n,MPI_INT,vectorb,local_n,MPI_INT,0,comm);
+        MPI_Gather(localVector,local_n,MPI_INT,vectorb,local_n,MPI_INT,comm);
     }
 
     printf("I'm process %d and that is my result vector: ",my_rank);
