@@ -74,6 +74,11 @@ int main(int argc,char *argv[]) {
 
    
 
+
+   free(local_x);
+   free(local_y);
+   free(local_z);
+
    if(my_rank==0){
       time_final=time_end-time_begin;
       printf("The time is = %f\n",time_final);
@@ -84,10 +89,6 @@ int main(int argc,char *argv[]) {
       fprintf(file,"%d - %d - %f\n",comm_sz, n,time_final);
       fclose(file);
    }
-
-   free(local_x);
-   free(local_y);
-   free(local_z);
 
    MPI_Finalize();
 
@@ -314,45 +315,11 @@ void Parallel_vector_sum(
    int local_i;
 
    for (local_i = 0; local_i < local_n; local_i++){
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
-      local_z[local_i] = local_x[local_i] - local_y[local_i];
-      local_z[local_i] = local_x[local_i] + local_y[local_i];
+      for(int j=0;j<1000000;j++){
+         local_z[local_i] = local_x[local_i] + local_y[local_i];
+         local_z[local_i] = local_x[local_i] - local_y[local_i];
+         local_z[local_i] = local_x[local_i] + local_y[local_i];
+      }
    
    }
 }  /* Parallel_vector_sum */
