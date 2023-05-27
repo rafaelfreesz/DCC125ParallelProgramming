@@ -19,6 +19,8 @@ que o omp_odd_even1.c.
 
 A tabela a seguir demonstra os resultados de tempo:
 
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_3/stats.jpg)
+
 Resultado:
 
 Com esperado, os runtimes do omp_odd_even2 são mais otimizados na maioria dos casos. A otimização é mais evidente em instâncias grandes, bem como para maiores quantidade de threads. Isso de dá pelo fato de o programa omp_odd_even1 demandar excesso de forks e joins de forma diretamente proporcional a quantidade de threads e o tamanho de entrada do problema.
