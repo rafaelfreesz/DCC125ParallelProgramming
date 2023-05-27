@@ -24,3 +24,5 @@ A pior combinação foi resultados foi o scheduling em blocos, atindindo o pior 
 De forma mais detalhada, segue o score das configurações:
 
 ![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_4/stats2.jpg)
+
+Resultados detalhados estão no arquivo [Task4_Statistics_OMP.ods](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_4/Task4_Statistics_OMP.ods)
