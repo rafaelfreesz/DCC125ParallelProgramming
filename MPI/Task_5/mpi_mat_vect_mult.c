@@ -47,18 +47,21 @@ void Mat_vect_mult(double local_A[], double local_x[],
       double local_y[], int local_m, int n, int local_n, 
       MPI_Comm comm);
 
+void printResult(int comm_sz, int n,double elapsed_time);
+
 /*-------------------------------------------------------------------*/
 int main(int argc,char *argv[]) {
    double* local_A;
    double* local_x;
    double* local_y;
-   double  time_begin, time_end, time_final;
+   double  begin_time, elapsed_time, max_time;
    int m, local_m, n, local_n;
    int my_rank, comm_sz;
    MPI_Comm comm;
 
    m=atoi(argv[1]);
    n=atoi(argv[1]);
+
    MPI_Init(NULL, NULL);
    comm = MPI_COMM_WORLD;
    MPI_Comm_size(comm, &comm_sz);
@@ -75,24 +78,19 @@ int main(int argc,char *argv[]) {
    Print_vector("x", local_x, n, local_n, my_rank, comm);
 #  endif
 
-   if(my_rank==0)
-   time_begin=MPI_Wtime();
+   MPI_Barrier(MPI_COMM_WORLD);
+   begin_time=MPI_Wtime();
 
    Mat_vect_mult(local_A, local_x, local_y, local_m, n, local_n, comm);
    
+   elapsed_time=MPI_Wtime()-begin_time;
 
-   if(my_rank==0)
-   time_end=MPI_Wtime();
+   MPI_Reduce(&elapsed_time,&max_time,1,MPI_DOUBLE,MPI_MAX,0, MPI_COMM_WORLD);
 
-   if(my_rank==0){
-      time_final=time_end-time_begin;
-      printf("The time is = %f\n",time_final);
 
-      FILE* file;
-
-      file=fopen("output.txt","a+");
-      fprintf(file,"%d - %d - %f\n",comm_sz, n,time_final);
-      fclose(file);
+   MPI_Barrier(MPI_COMM_WORLD);
+   if (my_rank == 0) {
+      printResult(comm_sz,n,max_time);
    }
 
    free(local_A);
@@ -454,14 +452,21 @@ void Mat_vect_mult(
    MPI_Allgather(local_x, local_n, MPI_DOUBLE,
          x, local_n, MPI_DOUBLE, comm);
 
-   for (local_i = 0; local_i < local_m; local_i++) {
-      local_y[local_i] = 0.0;
-      for (j = 0; j < n; j++)
-         for(int k=0;k<1000;k++){
-            local_y[local_i] += local_A[local_i*n+j]*x[j];
-            local_y[local_i] -= local_A[local_i*n+j]*x[j];
-            local_y[local_i] += local_A[local_i*n+j]*x[j];
-         }
-   }
+         double val;
+   
+      for (local_i = 0; local_i < local_m*1500; local_i++) {
+            val = 0.0;
+            for (j = 0; j < n*1500; j++){
+                  val = (2*3+2)*4;
+            }
+      }
+   
    free(x);
 }  /* Mat_vect_mult */
+
+void printResult(int comm_sz, int n,double elapsed_time){
+   FILE* file;
+   file=fopen("mpi_output.txt","a+");
+   fprintf(file,"%d - %d - %lf\n", comm_sz, n,elapsed_time);
+   fclose(file);
+}
