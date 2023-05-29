@@ -18,5 +18,3 @@ A segunda contem uma quantidade consideraval de write-miss, pelo fato do tamanho
 
 
 ![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_5/stats.jpg)
-
-![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_4/stats2.jpg)
