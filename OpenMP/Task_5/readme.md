@@ -8,22 +8,15 @@ Tente usar o gprof para ver o que está acontecendo nas caches (https://linuxhin
 
 ## SOLUÇÃO
 
-Foram executados os casos Static, Dynamic e Guide.
-O tamanho de bloco n foi testado com os valores 1, 2 e 10.
-Foram executadas estas combinações com o tamanhos de entrada de 3200, 6400, 128000, 256000, 512000, e com 1, 2, 4, 8 e 16 threads.
-Foi executada separadamente a configuração em blocos.
+É possível observar uma depreciação no desempenho, principalmente nas configurações 8x8000000 e 8000000x8.
 
-A tabela a seguir demonstra os resultados de tempo:
+Na primeira existe uma grande quantidade de false sharing, onde boa parte do conteudo das linhas de cash carregadas para cada thread compartilha conteúdo com a demais, invalidando-as no caso de atualização. Existe tambem uma grande quantidade de read-miss, pelo fato de o vetor x ser grande.
 
-![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_4/stats.jpg)
+A segunda contem uma quantidade consideraval de write-miss, pelo fato do tamanho vetor resultante.
 
-Resultado:
 
-A melhor combinação dentre as demais foi o scheduling definido como statyc com tamanho de bloco 10, atingindo o melhor tempo em 10 casos;
-A pior combinação foi resultados foi o scheduling em blocos, atindindo o pior tempo em 18 casos.
 
-De forma mais detalhada, segue o score das configurações:
+
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_5/stats.jpg)
 
 ![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_4/stats2.jpg)
-
-Resultados detalhados estão no arquivo [Task4_Statistics_OMP.ods](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_4/Task4_Statistics_OMP.ods)
