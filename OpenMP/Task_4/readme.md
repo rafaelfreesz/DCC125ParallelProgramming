@@ -18,7 +18,7 @@ A tabela a seguir demonstra os resultados de tempo:
 
 Resultado:
 
-A melhor combinação dentre as demais foi o scheduling definido como statyc com tamanho de bloco 10, atingindo o melhor tempo em 10 casos;
+A melhor combinação dentre as demais foi o scheduling definido como static com tamanho de bloco 10, atingindo o melhor tempo em 10 casos;
 A pior combinação foi resultados foi o scheduling em blocos, atindindo o pior tempo em 18 casos.
 
 De forma mais detalhada, segue o score das configurações:

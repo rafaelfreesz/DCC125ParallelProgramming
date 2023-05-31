@@ -1,4 +1,4 @@
-# TASK 4
+# TASK 5
 
 Leia, entenda e rode o código omp_mat_vect (codigo para multiplicacao de matriz vetor).
 Compare o desempenho desse código openmp usando diferentes tamanhos de matriz, semelhante ao slide do autor (8x 8000000, 8000 x 8000, 8000000 x 8). Mude sempre os tamanhos da matriz e o número de multiplicações matriz-vetor para conseguir tempos paralelos próximos de 1 seg.
