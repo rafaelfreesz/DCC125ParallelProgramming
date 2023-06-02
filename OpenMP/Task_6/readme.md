@@ -69,3 +69,12 @@ De forma mais detalhada, segue o score das configurações:
 
 
 Resultados detalhados estão no arquivo [Task6_a_Statistics_OMP.ods](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_6/Task6_a_Statistics_OMP.ods)
+
+### b)
+
+Foram realizadas execuções utilizando rand() e rand_r() considerando 1, 2 e 4 threads, com entradas de tamanho 100000000.
+
+Como pode ser observado, a função rand() não é capaz de fornecer desempenho adequadao para parametrização;
+A função rand_r() é thread safety, fornecendo o desempenho esperado.
+
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_6/stats_b.jpg)
