@@ -41,34 +41,40 @@ long monteCarlo(long long int nuLancamentos, double*piEst, int threadCount, doub
     double tempoInicio, tempoFinal;
 
     long seed=100;
+    
     struct drand48_data randBuffer;
-
-    srand48_r(seed,&randBuffer);
 
     tempoInicio=omp_get_wtime();
 
-   # pragma omp parallel for num_threads(threadCount) \
-        default(none) private(lancamento) shared(nuCirculo, nuLancamentos, randBuffer)
-    for(lancamento=0;lancamento<nuLancamentos;lancamento++){
+   # pragma omp parallel num_threads(threadCount) \
+        reduction(+: nuCirculo) default(none) private(lancamento, randBuffer) shared(nuLancamentos, seed)
+        {
 
-        double x;
-        double y;
 
-        drand48_r(&randBuffer,&x);
-        drand48_r(&randBuffer,&y);
+            srand48_r(seed,&randBuffer);
 
-        x=-1.0+2.0*x;
-        y=-1.0+2.0*y;
+            #pragma omp for
+            for(lancamento=0;lancamento<nuLancamentos;lancamento++){
 
-        double distQuad=x*x+y*y;
+                double x;
+                double y;
 
-        if(distQuad<=1.0){
-            nuCirculo++;
+                drand48_r(&randBuffer,&x);
+                drand48_r(&randBuffer,&y);
+
+                x=-1.0+2.0*x;
+                y=-1.0+2.0*y;
+
+                double distQuad=x*x+y*y;
+
+                nuCirculo+= distQuad<=1.0;
+
+            }
+
         }
 
-    }
-
     tempoFinal=omp_get_wtime();
+
     *tempoDecorrido=tempoFinal-tempoInicio;
 
     *piEst=4*((double)nuCirculo)/(double)nuLancamentos;
