@@ -52,15 +52,15 @@ Foram executadas as quantidades de lançamentos n, n={500000000, 1000000000, 200
 
 A tabela abaixo apresenta os runtimes, speedups e eficiências;
 
-![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_5/stats_1.jpg)
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_7/Stats_1.jpg)
 
 A tabela a seguir apresenta os valores médios de pi
 
-![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_5/stats_2.jpg)
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_7/Stats_2.jpg)
 
 Por fim, a tabela a seguir apresenta os valores médios de acerto
 
-![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_5/stats_3.jpg)
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_7/Stats_3.jpg)
 
 
 
