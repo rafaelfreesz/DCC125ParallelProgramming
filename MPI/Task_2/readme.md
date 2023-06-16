@@ -1,6 +1,8 @@
-# TASK 1
+# TASK 2
 
-Modificar o Código mpi_trap1 para aceitar valores de n tal que n%comm_sz!=0; Rodar e analisar resultados, medir runtime, desvio padrão de tempo, speedup e eficiência
+Modificar o Código mpi_trap3 para aceitar valores de n tal que n%comm_sz!=0;
+Rodar no modo normal e com a diretiva de otimização -O3;
+Analisar resultados, medir runtime, desvio padrão de tempo, speedup e eficiência.
 
 ## SOLUÇÃO
 
@@ -43,18 +45,30 @@ if(my_rank==0){
 
 Foram realizadas execuções de tamanho n={1000, 2000, 4000, 8000, 16000}, com as quantidades de processos m={1,2,4,8,16}.
 
+### Para a execução normal
+
 A tabela abaixo apresenta os runtimes, speedups e eficiências;
 
-![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/MPI/Task_1/Stats_1.jpg)
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/MPI/Task_2/Stats_1.jpg)
 
 A tabela a seguir apresenta os valores médios e desvio padrão dos resultados
 
-![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/MPI/Task_1/Stats_2.jpg)
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/MPI/Task_2/Stats_2.jpg)
+
+### Para a execução com o parâmetro -O3
+
+A tabela abaixo apresenta os runtimes, speedups e eficiências;
+
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/MPI/Task_2/Stats_1_O3.jpg)
+
+Os resultados são os mesmos da exeução anterior.
+
 
 ## Conclusão:
 
-Foi possível observar corretude nos resultados devido aos desvio padrão zero;
-Observa-se tambem eficiência com pouca variação ao acrescentar mais processadores. Pode-se afirmar que o algoritmo é proximo de uma escalabilidade forte.
+Em ambas exeuções foi possível observar corretude nos resultados devido aos desvio padrão zero;
+Para a execução normal observa-se efciência com pouca variação ao acrescentar mais processadores. Pode-se afirmar que o algoritmo é proximo de uma escalabilidade forte.
+Observa-se, por fim, uma melhora significativa do desempenho do algoritmo no uso do parâmetro -O3, de modo que, mantendo os mesmos parâmetros de entrada, não é possível analisar sua escalabilidade.
 
 
 

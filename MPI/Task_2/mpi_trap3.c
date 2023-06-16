@@ -1,14 +1,15 @@
-/* File:     mpi_trap1.c
+/* File:     mpi_trap3.c
  * Purpose:  Use MPI to implement a parallel version of the trapezoidal 
- *           rule.  In this version the endpoints of the interval and
- *           the number of trapezoids are hardwired.
+ *           rule.  This version uses collective communications to 
+ *           distribute the input data and compute the global sum.
  *
- * Input:    None.
+ * Input:    The endpoints of the interval of integration and the number
+ *           of trapezoids
  * Output:   Estimate of the integral from a to b of f(x)
  *           using the trapezoidal rule and n trapezoids.
  *
- * Compile:  mpicc -g -Wall -o mpi_trap1 mpi_trap1.c
- * Run:      mpiexec -n <number of processes> ./mpi_trap1
+ * Compile:  mpicc -g -Wall -o mpi_trap2 mpi_trap2.c
+ * Run:      mpiexec -n <number of processes> ./mpi_trap2
  *
  * Algorithm:
  *    1.  Each process calculates "its" interval of
@@ -19,9 +20,9 @@
  *    3b. Process 0 sums the calculations received from
  *        the individual processes and prints the result.
  *
- * Note:  f(x), a, b, and n are all hardwired.
+ * Note:  f(x) is all hardwired.
  *
- * IPP:   Section 3.2.2 (pp. 96 and ff.)
+ * IPP:   Section 3.4.2 (pp. 104 and ff.)
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,53 +30,46 @@
 #include <string.h>
 #include <mpi.h>
 
+/* Get the input values */
+void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p,
+      int* n_p);
+
+/* Calculate local integral  */
 double Trap(double left_endpt, double right_endpt, int trap_count, 
-   double base_len); 
+   double base_len);    
+
+/* Function we're integrating */
 double f(double x); 
-void printResult(int comm_sz, int n,double result, double elapsed_time);
-void verifyInterval(int comm_sz,int my_rank,double local_a, double local_b);
 int buildLimits(int my_rank, double* local_a, double* local_b, double* before_b, int a,double h, int comm_sz, int n);
+void printResult(int comm_sz, int n,double result, double elapsed_time);
 
 int main(int argc, char* argv[]) {
-
-
    int my_rank, comm_sz, n = atoi(argv[1]), local_n;   
-   double a = 0.0, b = 3.0, h, local_a, local_b, before_b;
-   double local_int, total_int, begin_time, end_time, elapsed_time;
-   int source;
-   MPI_Comm comm= MPI_COMM_WORLD;
+   double a=0.0, b=3.0, h, local_a, local_b, before_b, begin_time, end_time, elapsed_time;
+   double local_int, total_int;
 
    /* Let the system do what it needs to start up MPI */
    MPI_Init(NULL, NULL);
 
    /* Get my process rank */
-   MPI_Comm_rank(comm, &my_rank);
+   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
    /* Find out how many processes are being used */
-   MPI_Comm_size(comm, &comm_sz);
+   MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 
-   h = (b-a)/n;          /* h is the same for all processes */  
+   h = (b-a)/n;          /* h is the same for all processes */
 
    local_n = buildLimits(my_rank,&local_a,&local_b,&before_b,a,h,comm_sz,n);
 
-   MPI_Barrier(comm);
+   MPI_Barrier(MPI_COMM_WORLD);
 
    begin_time=MPI_Wtime();
-
+   
    local_int = Trap(local_a, local_b, local_n, h);
 
    /* Add up the integrals calculated by each process */
-   if (my_rank != 0) { 
-      MPI_Send(&local_int, 1, MPI_DOUBLE, 0, 0, 
-            MPI_COMM_WORLD);
-   } else {
-      total_int = local_int;
-      for (source = 1; source < comm_sz; source++) {
-         MPI_Recv(&local_int, 1, MPI_DOUBLE, source, 0,
-            MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         total_int += local_int;
-      }
-   } 
+   MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0,
+         MPI_COMM_WORLD);
 
    end_time=MPI_Wtime();
    elapsed_time=end_time-begin_time;
@@ -88,10 +82,8 @@ int main(int argc, char* argv[]) {
    /* Shut down MPI */
    MPI_Finalize();
 
-
    return 0;
 } /*  main  */
-
 
 /*------------------------------------------------------------------
  * Function:     Trap
@@ -142,27 +134,9 @@ double f(double x) {
 
 void printResult(int comm_sz, int n,double result, double elapsed_time){
    FILE* file;
-   file=fopen("mpi_trap1_output.txt","a+");
+   file=fopen("mpi_trap3_output_O3.txt","a+");
    fprintf(file,"%d - %d - %lf - %lf\n", comm_sz, n,result,elapsed_time);
    fclose(file);
-}
-
-void verifyInterval(int comm_sz,int my_rank,double local_a, double local_b){
-   
-      char msg[200];
-   if(my_rank!=0){
-      sprintf(msg,"I'm process %d, my [local_a,local_b] is [%lf,%lf]. d=%lf",my_rank,local_a,local_b,local_b-local_a);
-      MPI_Send(msg,strlen(msg)+1,MPI_CHAR,0,0,MPI_COMM_WORLD);
-
-   }else{
-      printf("I'm process %d, my [local_a,local_b] is [%lf,%lf]. d=%lf\n",my_rank,local_a,local_b,local_b-local_a);
-      for(int i=1;i<comm_sz;i++){
-         MPI_Recv(msg,200,MPI_CHAR,i,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
-         printf("%s\n",msg);
-      }
-
-   }
-
 }
 
 int buildLimits(int my_rank, double* local_a, double* local_b, double* before_b, int a,double h, int comm_sz, int n){
