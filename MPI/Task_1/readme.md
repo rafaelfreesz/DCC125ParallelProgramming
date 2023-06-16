@@ -54,7 +54,7 @@ A tabela a seguir apresenta os valores médios e desvio padrão dos resultados
 ## Conclusão:
 
 Foi possível observar corretude nos resultados devido aos desvio padrão zero;
-Observa-se tambem eficiência com pouca variação ao acrescentar mais processadores. Pode-se afirmar que o algoritmo é proximo de uma escalabilidade forte.
+Observa-se tambem eficiência com pouca variação ao acrescentar proporcionamente processadores e o tamanho da entrada. Pode-se afirmar que o algoritmo é proximo de uma escalabilidade fraca.
 
 
 

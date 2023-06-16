@@ -39,6 +39,8 @@ void Print_vector(double local_b[], int local_n, int n, char title[],
 void Parallel_vector_sum(double local_x[], double local_y[], 
       double local_z[], int local_n);
 
+void printResult(int comm_sz, int n,double result, double elapsed_time);
+
 
 /*-------------------------------------------------------------------*/
 int main(int argc,char *argv[]) {
@@ -64,12 +66,11 @@ int main(int argc,char *argv[]) {
    Read_vector(local_x, local_n, n, "x", my_rank, comm,1);
    Read_vector(local_y, local_n, n, "y", my_rank, comm,2);
    
-   if(my_rank==0)
+   MPI_Barrier(comm);
    time_begin=MPI_Wtime();
  
    Parallel_vector_sum(local_x, local_y, local_z, local_n);
  
-   if(my_rank==0)
    time_end=MPI_Wtime();
 
    
@@ -81,13 +82,8 @@ int main(int argc,char *argv[]) {
 
    if(my_rank==0){
       time_final=time_end-time_begin;
-      printf("The time is = %f\n",time_final);
 
-      FILE* file;
-
-      file=fopen("output.txt","a+");
-      fprintf(file,"%d - %d - %f\n",comm_sz, n,time_final);
-      fclose(file);
+      printResult(comm_sz,n,0,time_final);
    }
 
    MPI_Finalize();
@@ -112,6 +108,14 @@ int main(int argc,char *argv[]) {
  *    The communicator containing the processes calling Check_for_error
  *    should be MPI_COMM_WORLD.
  */
+
+void printResult(int comm_sz, int n,double result, double elapsed_time){
+   FILE* file;
+   file=fopen("mpi_vect_add_output.txt","a+");
+   fprintf(file,"%d - %d - %lf - %lf\n", comm_sz, n,result,elapsed_time);
+   fclose(file);
+}
+
 void Check_for_error(
       int       local_ok   /* in */, 
       char      fname[]    /* in */,
