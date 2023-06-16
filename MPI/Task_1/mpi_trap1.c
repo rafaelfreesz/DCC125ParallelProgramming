@@ -185,7 +185,7 @@ if(my_rank==0){
    }
 
    if(my_rank!=(comm_sz-1)){
-      MPI_Send(&local_b,1,MPI_DOUBLE,my_rank+1,0,MPI_COMM_WORLD);
+      MPI_Send(local_b,1,MPI_DOUBLE,my_rank+1,0,MPI_COMM_WORLD);
    }
 
    return local_n;

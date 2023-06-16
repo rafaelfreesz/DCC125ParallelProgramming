@@ -26,27 +26,28 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-
-/* We'll be using MPI routines, definitions, etc. */
+#include <unistd.h>
+#include <string.h>
 #include <mpi.h>
+
+/* Get the input values */
+void Get_input(int my_rank, int comm_sz, double* a_p, double* b_p,
+      int* n_p);
 
 /* Calculate local integral  */
 double Trap(double left_endpt, double right_endpt, int trap_count, 
    double base_len);    
 
 /* Function we're integrating */
-int f(int x); 
+double f(double x); 
+int buildLimits(int my_rank, double* local_a, double* local_b, double* before_b, int a,double h, int comm_sz, int n);
+void printResult(int comm_sz, int n,double result, double elapsed_time);
+void verifyInterval(int comm_sz,int my_rank,double local_a, double local_b);
 
-int main(int argc,char *argv[]) {
-   
-   int my_rank, comm_sz, n;  
-   double a, b, h;
+int main(int argc, char* argv[]) {
+   int my_rank, comm_sz, n = atoi(argv[1]); 
+   double a=0.0, b=3.0, h, begin_time, end_time, elapsed_time;
    double local_int, total_int;
-   double time_begin, time_end, time_final;
-
-   a=atof(argv[1]);   
-   b=atof(argv[2]);   
-   n=atoi(argv[3]);
 
    /* Let the system do what it needs to start up MPI */
    MPI_Init(NULL, NULL);
@@ -58,15 +59,13 @@ int main(int argc,char *argv[]) {
    MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 
    h = (b-a)/n;          /* h is the same for all processes */
-
-   /* Length of each process' interval of
-    * integration = local_n*h.  So my interval
-    * starts at: */
-
-   time_begin=MPI_Wtime();
-
-   local_int = 0;
    
+   MPI_Barrier(MPI_COMM_WORLD);
+
+   begin_time=MPI_Wtime();
+   
+   local_int = 0;
+
    double x;
    for(int i=my_rank;i<n;i+=comm_sz){
       x=a+i*h;
@@ -77,22 +76,12 @@ int main(int argc,char *argv[]) {
    MPI_Reduce(&local_int, &total_int, 1, MPI_DOUBLE, MPI_SUM, 0,
          MPI_COMM_WORLD);
 
-   time_end=MPI_Wtime();
+   end_time=MPI_Wtime();
+   elapsed_time=end_time-begin_time;
 
    /* Print the result */
    if (my_rank == 0) {
-      printf("With n = %d trapezoids, our estimate\n", n);
-      printf("of the integral from %f to %f = %.15e\n\n",
-          a, b, total_int);
-      
-      time_final=time_end-time_begin;
-      printf("Execution time = %f\n",time_final);
-
-      FILE* file;
-
-      file=fopen("output.txt","a");
-      fprintf(file,"%d - %d - %f\n",comm_sz, n,time_final);
-      fclose(file);
+     printResult(comm_sz,n,total_int,elapsed_time);
    }
 
    /* Shut down MPI */
@@ -100,18 +89,6 @@ int main(int argc,char *argv[]) {
 
    return 0;
 } /*  main  */
-
-/*------------------------------------------------------------------
- * Function:     Get_input
- * Purpose:      Get the user input:  the left and right endpoints
- *               and the number of trapezoids
- * Input args:   my_rank:  process rank in MPI_COMM_WORLD
- *               comm_sz:  number of processes in MPI_COMM_WORLD
- * Output args:  a_p:  pointer to left endpoint               
- *               b_p:  pointer to right endpoint               
- *               n_p:  pointer to number of trapezoids
- */
-
 
 /*------------------------------------------------------------------
  * Function:     Trap
@@ -130,7 +107,7 @@ double Trap(
       double right_endpt /* in */, 
       int    trap_count  /* in */, 
       double base_len    /* in */) {
-   double estimate, x; 
+   double estimate,x; 
    int i;
 
    estimate = (f(left_endpt) + f(right_endpt))/2.0;
@@ -149,15 +126,67 @@ double Trap(
  * Purpose:     Compute value of function to be integrated
  * Input args:  x
  */
-int f(int x) {
-   if(x>0){
-      int result=x--;
-      while(x>1){
-         result*=x--;
+double f(double x) {
+   double res=x*x;
+   int y=(int)x;
+   for(int i=y*y*y*y*y*y*y*y*y*y;i>0;i--){
+      for(int j=0;j<y*y*y*y*y*y*y*y*y;j++){
+         res=x/x;
+         res=x*x;
       }
-      return result;
-   }else{
-      return 1;
    }
 
+   return res;
 } /* f */
+
+void printResult(int comm_sz, int n,double result, double elapsed_time){
+   FILE* file;
+   file=fopen("mpi_trap3_output_ciclic.txt","a+");
+   fprintf(file,"%d - %d - %lf - %lf\n", comm_sz, n,result,elapsed_time);
+   fclose(file);
+}
+
+int buildLimits(int my_rank, double* local_a, double* local_b, double* before_b, int a,double h, int comm_sz, int n){
+   int local_n = n/comm_sz;
+
+if(my_rank==0){
+      *local_a = a + my_rank* local_n*h;
+      *local_b = *local_a + local_n*h;
+
+   }else{
+      MPI_Recv(before_b,1,MPI_DOUBLE,my_rank-1,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+      *local_a=*before_b;
+      *local_b=*local_a+local_n*h;
+
+      if(my_rank>=comm_sz-n%comm_sz){
+         local_n++;
+         *local_b+=h;
+      }
+
+   }
+
+   if(my_rank!=(comm_sz-1)){
+      MPI_Send(local_b,1,MPI_DOUBLE,my_rank+1,0,MPI_COMM_WORLD);
+   }
+
+   return local_n;
+
+}
+
+void verifyInterval(int comm_sz,int my_rank,double local_a, double local_b){
+   
+      char msg[200];
+   if(my_rank!=0){
+      sprintf(msg,"I'm process %d, my [local_a,local_b] is [%lf,%lf]. d=%lf",my_rank,local_a,local_b,local_b-local_a);
+      MPI_Send(msg,strlen(msg)+1,MPI_CHAR,0,0,MPI_COMM_WORLD);
+
+   }else{
+      printf("I'm process %d, my [local_a,local_b] is [%lf,%lf]. d=%lf\n",my_rank,local_a,local_b,local_b-local_a);
+      for(int i=1;i<comm_sz;i++){
+         MPI_Recv(msg,200,MPI_CHAR,i,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+         printf("%s\n",msg);
+      }
+
+   }
+
+}
