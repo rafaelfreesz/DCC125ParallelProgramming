@@ -61,15 +61,16 @@ A tabela abaixo apresenta os runtimes, speedups e eficiências;
 
 ![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/MPI/Task_2/Stats_1_O3.jpg)
 
-Os resultados são os mesmos da exeução anterior.
+A tabela a seguir apresenta os valores médios e desvio padrão dos resultados
+
+![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/MPI/Task_2/Stats_2_O3.jpg)
 
 
 ## Conclusão:
 
-Em ambas exeuções foi possível observar corretude nos resultados devido aos desvio padrão zero;
+Em ambas exeuções foi possível observar corretude nos resultados devido aos desvio padrão zero dos resultados;
 Para a execução normal observa-se efciência com pouca variação ao acrescentar mais processadores. Pode-se afirmar que o algoritmo é proximo de uma escalabilidade forte.
 Observa-se, por fim, uma melhora significativa do desempenho do algoritmo no uso do parâmetro -O3, de modo que, mantendo os mesmos parâmetros de entrada, não é possível analisar sua escalabilidade.
-
 
 
 

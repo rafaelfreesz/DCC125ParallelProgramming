@@ -135,7 +135,7 @@ double f(double x) {
 
 void printResult(int comm_sz, int n,double result, double elapsed_time){
    FILE* file;
-   file=fopen("mpi_trap3_output.txt","a+");
+   file=fopen("mpi_trap3_output_O3.txt","a+");
    fprintf(file,"%d - %d - %lf - %lf\n", comm_sz, n,result,elapsed_time);
    fclose(file);
 }
