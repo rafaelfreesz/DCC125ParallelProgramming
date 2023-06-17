@@ -26,6 +26,8 @@
 void Usage(char* prog_name);
 double f(double x);    /* Function we're integrating */
 void Trap(double a, double b, int n, double* global_result_p);
+void printResult(int thread_count, int n,double result, double elapsed_time);
+
 int main(int argc, char* argv[]) {
    double  global_result = 0.0;  /* Store result in global_result */
    double  a=0.0;
@@ -39,22 +41,30 @@ int main(int argc, char* argv[]) {
    
    if (n % thread_count != 0) Usage(argv[0]);
    
-   begin_time=omp_get_wtime();
    
+   begin_time=omp_get_wtime();
+
 #  pragma omp parallel num_threads(thread_count) 
    Trap(a, b, n, &global_result);
    
    end_time=omp_get_wtime();
+   
    elapsed_time=end_time-begin_time;
    printf("Elapsed time: %lf\n", elapsed_time);
    
-   FILE* file;
-   file=fopen("output.txt","a+");
-   fprintf(file,"%d - %d - %lf\n", thread_count, n,elapsed_time);
-   fclose(file);
-   
+   printResult(thread_count,n,global_result,elapsed_time);
+
    return 0;
 }  /* main */
+
+void printResult(int thread_count, int n,double result, double elapsed_time){
+   FILE* file;
+   file=fopen("omp_trap_1_output.txt","a+");
+   fprintf(file,"%d - %d - %lf - %lf\n", thread_count, n,result,elapsed_time);
+   fclose(file);
+}
+
+
 /*--------------------------------------------------------------------
  * Function:    Usage
  * Purpose:     Print command line for function and terminate
@@ -74,7 +84,10 @@ void Usage(char* prog_name) {
  */
 double f(double x) {
    double return_val;
-   return_val = x*x;
+   for(int i=0;i<15000000;i++){
+      return_val = x-x+x;
+
+   }
    return return_val;
 }  /* f */
 /*------------------------------------------------------------------
@@ -99,8 +112,9 @@ void Trap(double a, double b, int n, double* global_result_p) {
    local_b = local_a + local_n*h; 
    my_result = (f(local_a) + f(local_b))/2.0; 
    for (i = 1; i <= local_n-1; i++) {
-     x = local_a + i*h;
-     my_result += f(x);
+      x = local_a + i*h;
+      my_result += f(x);
+     
    }
    my_result = my_result*h; 
 #  pragma omp critical 
