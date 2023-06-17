@@ -54,7 +54,7 @@ int main(int argc,char *argv[]) {
    double* local_A;
    double* local_x;
    double* local_y;
-   double  begin_time, elapsed_time, max_time;
+   double  begin_time, elapsed_time;
    int m, local_m, n, local_n;
    int my_rank, comm_sz;
    MPI_Comm comm;
@@ -79,18 +79,17 @@ int main(int argc,char *argv[]) {
 #  endif
 
    MPI_Barrier(MPI_COMM_WORLD);
+
    begin_time=MPI_Wtime();
 
    Mat_vect_mult(local_A, local_x, local_y, local_m, n, local_n, comm);
    
    elapsed_time=MPI_Wtime()-begin_time;
 
-   MPI_Reduce(&elapsed_time,&max_time,1,MPI_DOUBLE,MPI_MAX,0, MPI_COMM_WORLD);
-
-
    MPI_Barrier(MPI_COMM_WORLD);
+
    if (my_rank == 0) {
-      printResult(comm_sz,n,max_time);
+      printResult(comm_sz,n,elapsed_time);
    }
 
    free(local_A);
@@ -454,10 +453,15 @@ void Mat_vect_mult(
 
          double val;
    
-      for (local_i = 0; local_i < local_m*1500; local_i++) {
+      for (local_i = 0; local_i < local_m; local_i++) {
             val = 0.0;
-            for (j = 0; j < n*1500; j++){
-                  val = (2*3+2)*4;
+            for (j = 0; j < n; j++){
+                  for(int k=0;k<10000;k++){
+                        
+                        val -=1;
+                        val +=1;
+
+                  }
             }
       }
    
