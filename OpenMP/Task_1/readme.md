@@ -1,6 +1,7 @@
-# TASK 4
+# TASK 1
 
-Analisar runtime, speedup e eficiência da soma de vetores.
+Leia, entenda e execute os programa em OPENMP de hello world e trap1.
+Para o trap1, gera as tabelas de speedup e eficiencia.
 
 ## SOLUÇÃO
 
@@ -11,8 +12,3 @@ Foram realizadas execuções de tamanho n={160, 320, 640, 1280, 2560}, com as qu
 A tabela abaixo apresenta os runtimes, speedups e eficiências;
 
 ![text](https://github.com/rafaelfreesz/DCC125ParallelProgramming/blob/master/OpenMP/Task_1/Stats.jpg)
-
-
-## Conclusão:
-
-É possível observar a pouca variação de eficiência ao aumentar na mesma proporção o número de processos e o tamanho da entrada. Logo, o programa é fracamente escalável.
